@@ -1,0 +1,12 @@
+{
+  "name": "ai-companion-frontend",
+  "version": "1.0.0",
+  "description": "FOSS AI Companion UI",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^41.2.1"
+  }
+}

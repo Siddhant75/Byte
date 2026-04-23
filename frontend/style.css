@@ -1,0 +1,489 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;700&display=swap');
+
+:root {
+    --accent-color: #ff8e8e;
+    --text-primary: #ffffff;
+    --card-bg: rgba(30, 30, 45, 0.95);
+    --pixel-font: 'VT323', monospace;
+    --body-font: 'Inter', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    background-color: transparent !important;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--body-font);
+}
+
+.widget-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    height: 100%;
+}
+
+.avatar-zone {
+    height: 250px; 
+    width: 250px;  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-app-region: drag;
+    cursor: grab;
+    z-index: 10;
+    transition: transform 0.2s;
+    position: relative;
+    animation: floating 3s ease-in-out infinite;
+}
+
+.avatar-zone:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+.avatar-zone.is-focusing {
+    /* No background/border for floating effect */
+}
+
+.pixel-bunny {
+    width: 250px;
+    height: 250px;
+    pointer-events: none;
+    transition: filter 0.3s;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+}
+
+.pixel-bunny.is-focusing {
+    animation: focus-vibe 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(255, 204, 51, 0.8));
+}
+
+/* Avatar Prompt Alert */
+.avatar-prompt {
+    position: absolute;
+    top: -20px;
+    background: var(--accent-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    pointer-events: none;
+    box-shadow: 0 4px 15px rgba(255, 142, 142, 0.4);
+    z-index: 20;
+}
+
+.avatar-prompt.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Mini Timer Button */
+.mini-timer {
+    position: absolute;
+    right: -10px;
+    bottom: 40px;
+    background: #ffcc33;
+    color: #151525;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-family: var(--pixel-font);
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: none; /* Hidden when not focusing */
+    animation: pulse 2s infinite;
+    z-index: 15;
+    border: 2px solid #151525;
+}
+
+.mini-timer.visible {
+    display: block;
+}
+
+.chat-container {
+    margin-top: 10px;
+    width: 100%;
+    flex: 1;
+    min-height: 180px; 
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    overflow: hidden;
+    -webkit-app-region: no-drag;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    resize: vertical; /* Allow user to resize height */
+}
+
+#chat-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+}
+
+#chat-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-log::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+#chat-log::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 10px;
+}
+
+.message {
+    padding: 10px 15px; /* Increased padding */
+    border-radius: 12px;
+    font-size: 0.95rem; /* Slightly larger text */
+    max-width: 85%; /* Narrower for better bubble look */
+    word-break: break-word; /* Ensure it wraps */
+    overflow-wrap: break-word; 
+    white-space: pre-wrap; /* Preserve spaces and newlines */
+    line-height: 1.5; /* Better spacing between lines */
+    margin-bottom: 5px;
+}
+
+.message.bot {
+    background: rgba(255, 142, 142, 0.1);
+    color: var(--accent-color);
+    align-self: flex-start;
+}
+
+.message.user {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    align-self: flex-end;
+}
+
+.input-area {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    gap: 8px;
+}
+
+#chat-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: white;
+    outline: none;
+}
+
+#send-btn {
+    background: var(--accent-color);
+    border: none;
+    border-radius: 8px;
+    padding: 0 15px;
+    font-family: var(--pixel-font);
+    cursor: pointer;
+}
+
+/* Animations from previous work */
+/* Animations */
+.eye { transform-origin: center; animation: blinking 4s infinite; }
+@keyframes blinking { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+
+#ear-l { transform-origin: bottom; animation: wiggle-left 3s infinite; }
+#ear-r { transform-origin: bottom; animation: wiggle-right 3s infinite; }
+
+@keyframes wiggle-left {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-8deg); }
+}
+
+@keyframes wiggle-right {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(8deg); }
+}
+
+
+/* History Button */
+#history-toggle-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    padding: 0 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background 0.2s;
+}
+
+#history-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Overlay Styles */
+.overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: 90%;
+    height: 80%;
+    background: rgba(20, 20, 30, 0.98);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 142, 142, 0.3);
+    border-radius: 20px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.overlay.active {
+    display: flex;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.overlay-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.overlay-header h3 {
+    margin: 0;
+    font-family: var(--pixel-font);
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
+
+#close-history-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#history-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: relative;
+}
+
+.history-item .sender {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    letter-spacing: 1px;
+}
+
+.history-item .text {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.history-item .delete-item-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.history-item .delete-item-btn:hover {
+    color: #ff4444;
+}
+
+.overlay-footer {
+    padding: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+}
+
+#clear-history-btn {
+    background: rgba(255, 68, 68, 0.2);
+    border: 1px solid #ff4444;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+#clear-history-btn:hover {
+    background: #ff4444;
+}
+
+.message.bot.thinking {
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.5);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+@keyframes floating {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes focus-vibe {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.02); }
+}
+
+/* Timer Zone Styles */
+.timer-zone {
+    margin-top: 5px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(77, 184, 255, 0.2);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    backdrop-filter: blur(5px);
+}
+
+.timer-config {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: -5px;
+    opacity: 0.8;
+}
+
+#timer-minutes {
+    width: 45px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(77, 184, 255, 0.3);
+    color: #4db8ff;
+    font-family: var(--pixel-font);
+    font-size: 0.9rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    text-align: center;
+    outline: none;
+}
+
+#timer-minutes::-webkit-inner-spin-button {
+    opacity: 0;
+}
+
+.min-label {
+    font-family: var(--pixel-font);
+    font-size: 0.7rem;
+    color: #4db8ff;
+    text-transform: uppercase;
+}
+
+#time-display {
+    font-family: var(--pixel-font);
+    font-size: 1.8rem;
+    color: #4db8ff;
+    text-shadow: 0 0 10px rgba(77, 184, 255, 0.6);
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    margin: 0;
+}
+
+#time-display.is-focusing {
+    color: #ffcc33;
+    text-shadow: 0 0 25px rgba(255, 204, 51, 0.8);
+    animation: pulse 2s infinite;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+#start-timer-btn, #stop-timer-btn {
+    font-family: var(--pixel-font);
+    font-size: 0.9rem;
+    padding: 5px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    flex: 1;
+}
+
+#start-timer-btn {
+    background: #4db8ff;
+    border: none;
+    color: #151525;
+    font-weight: bold;
+}
+
+#stop-timer-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+#start-timer-btn:hover:not(:disabled) { 
+    background: #70c9ff; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(77, 184, 255, 0.3);
+}
+
+#start-timer-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #2a2a4a;
+    color: #4db8ff;
+    border: 1px solid #4db8ff;
+}
+
+#stop-timer-btn:hover { 
+    background: rgba(255, 68, 68, 0.2); 
+    border-color: #ff4444;
+}

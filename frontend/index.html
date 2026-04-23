@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byte - Floating Companion</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="widget-container">
+        <!-- Draggable Avatar Zone -->
+        <div class="avatar-zone">
+            <svg class="pixel-bunny" viewBox="0 0 100 100">
+                <!-- Ears -->
+                <g id="ear-l" class="bunny-ear">
+                    <path d="M30 10h10v30H30z" fill="#FFCCFF"/>
+                    <path d="M32 12h6v20h-6z" fill="#FF99CC"/>
+                </g>
+                <g id="ear-r" class="bunny-ear">
+                    <path d="M60 10h10v30H60z" fill="#FFCCFF"/>
+                    <path d="M62 12h6v20h-6z" fill="#FF99CC"/>
+                </g>
+                <!-- Face -->
+                <rect x="25" y="35" width="50" height="40" rx="15" fill="white"/>
+                <!-- Eyes -->
+                <rect class="eye" x="35" y="45" width="6" height="6" fill="#333"/>
+                <rect class="eye" x="59" y="45" width="6" height="6" fill="#333"/>
+                <!-- Nose -->
+                <rect x="47" y="52" width="6" height="4" fill="#FF99CC"/>
+                <!-- Blushes -->
+                <rect x="30" y="55" width="8" height="4" fill="#FFD1DC" opacity="0.5"/>
+                <rect x="62" y="55" width="8" height="4" fill="#FFD1DC" opacity="0.5"/>
+                <!-- Body -->
+                <path d="M35 70h30v20H35z" fill="white"/>
+                <!-- Tail -->
+                <circle cx="70" cy="85" r="5" fill="#FFCCFF"/>
+            </svg>
+            <div id="avatar-prompt" class="avatar-prompt">Press Ctrl+Space to toggle chat</div>
+            <div id="mini-timer" class="mini-timer">25:00</div>
+        </div>
+
+        <!-- Collapsible Chat Zone -->
+        <div class="chat-container" id="chat-container">
+            <!-- Integrated Timer Zone -->
+            <div class="timer-zone">
+                <div class="timer-config">
+                    <input type="number" id="timer-minutes" value="25" min="1" max="120">
+                    <span class="min-label">min</span>
+                </div>
+                <h2 id="time-display">25:00</h2>
+                <div class="timer-controls">
+                    <button id="start-timer-btn">Start Focus</button>
+                    <button id="stop-timer-btn">Stop</button>
+                </div>
+            </div>
+            <div class="chat-log" id="chat-log">
+                <div class="message bot">
+                    Byte is active. Press Ctrl+Space to toggle chat.
+                </div>
+            </div>
+            <div class="input-area">
+                <button id="history-toggle-btn" title="View History">📜</button>
+                <input type="text" id="chat-input" placeholder="Say something..." spellcheck="false" autocomplete="off">
+                <button id="send-btn">></button>
+            </div>
+        </div>
+
+        <!-- History Overlay -->
+        <div id="history-overlay" class="overlay">
+            <div class="overlay-header">
+                <h3>Interaction History</h3>
+                <button id="close-history-btn">×</button>
+            </div>
+            <div id="history-list">
+                <!-- History items will be injected here -->
+            </div>
+            <div class="overlay-footer">
+                <button id="clear-history-btn">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+
+</html>
