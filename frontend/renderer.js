@@ -12,9 +12,20 @@ const startTimerBtn = document.getElementById('start-timer-btn');
 const stopTimerBtn = document.getElementById('stop-timer-btn');
 const avatarZone = document.querySelector('.avatar-zone');
 const pixelBunny = document.querySelector('.pixel-bunny');
+const companionSvg = document.getElementById('companion-svg');
 const timerMinutesInput = document.getElementById('timer-minutes');
 const avatarPrompt = document.getElementById('avatar-prompt');
 const miniTimer = document.getElementById('mini-timer');
+
+function setAvatarState(stateName) {
+    if (!companionSvg) return;
+    Array.from(companionSvg.classList).forEach(className => {
+        if (className.startsWith('state-')) {
+            companionSvg.classList.remove(className);
+        }
+    });
+    companionSvg.classList.add(`state-${stateName}`);
+}
 
 let timerInterval = null;
 let secondsRemaining = 25 * 60;
@@ -157,6 +168,8 @@ async function sendMessage(overrideMessage = null, isSystemEvent = false) {
     chatLog.appendChild(botMsgDiv);
     chatLog.scrollTop = chatLog.scrollHeight;
 
+    setAvatarState('thinking');
+
     try {
         const response = await fetch('http://localhost:8000/chat', {
             method: 'POST',
@@ -199,6 +212,12 @@ async function sendMessage(overrideMessage = null, isSystemEvent = false) {
         console.error("Chat Error:", error);
         botMsgDiv.classList.remove('thinking');
         botMsgDiv.textContent = 'Byte is disconnected from the backend.';
+    } finally {
+        if (timerInterval) {
+            setAvatarState('focusing');
+        } else {
+            setAvatarState('idle');
+        }
     }
 }
 
@@ -206,7 +225,15 @@ async function updateUI() {
     try {
         // We still fetch stats to ensure connection is alive, 
         // but we no longer display them in a status bar.
-        await fetch('http://localhost:8000/stats');
+        const response = await fetch('http://localhost:8000/stats');
+        const stats = await response.json();
+        
+        // Sync animation state
+        if (stats.current_activity === 'idle') {
+            setAvatarState('idle');
+        } else if (stats.current_activity === 'focusing') {
+            setAvatarState('focusing');
+        }
     } catch (error) {
         console.error("Update UI Error:", error);
     }
@@ -234,6 +261,9 @@ async function startFocus() {
     
     // Lock the input
     timerMinutesInput.disabled = true;
+    
+    // Instant visual feedback
+    setAvatarState('focusing');
 
     try {
         await fetch('http://localhost:8000/focus/start', { method: 'POST' });
@@ -272,6 +302,12 @@ async function completeFocus() {
     pixelBunny.classList.remove('is-focusing');
     timeDisplay.classList.remove('is-focusing');
     miniTimer.classList.remove('visible');
+
+    // Celebrate briefly
+    setAvatarState('celebrate');
+    setTimeout(() => {
+        setAvatarState('idle');
+    }, 5000);
 
     try {
         const response = await fetch('http://localhost:8000/focus/complete', {

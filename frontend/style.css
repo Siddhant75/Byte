@@ -203,22 +203,94 @@ html, body {
     cursor: pointer;
 }
 
-/* Animations from previous work */
-/* Animations */
-.eye { transform-origin: center; animation: blinking 4s infinite; }
-@keyframes blinking { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
-
-#ear-l { transform-origin: bottom; animation: wiggle-left 3s infinite; }
-#ear-r { transform-origin: bottom; animation: wiggle-right 3s infinite; }
-
-@keyframes wiggle-left {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(-8deg); }
+/* Layered SVG Animations */
+#bunny-body, #bunny-eyes, #arm-left, #arm-right {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+#companion-svg {
+    transition: transform 0.3s ease;
+}
+#prop-keyboard, #prop-sweat {
+    transition: opacity 0.3s ease;
 }
 
-@keyframes wiggle-right {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(8deg); }
+@keyframes breathe {
+    0%, 100% { transform: scaleY(1) translateY(0); }
+    50% { transform: scaleY(1.02) translateY(-2px); }
+}
+
+@keyframes blink {
+    0%, 96%, 100% { transform: scaleY(1); }
+    98% { transform: scaleY(0); }
+}
+
+@keyframes type-left {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes type-right {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes look-around {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+/* State: Idle */
+.state-idle #bunny-body {
+    animation: breathe 4s infinite ease-in-out;
+}
+.state-idle #bunny-eyes {
+    animation: blink 5s infinite;
+}
+.state-idle #prop-keyboard {
+    opacity: 0 !important;
+}
+
+/* State: Focusing */
+.state-focusing #bunny-body {
+    animation: breathe 2s infinite ease-in-out;
+}
+.state-focusing #arm-left {
+    animation: type-left 0.15s infinite;
+}
+.state-focusing #arm-right {
+    animation: type-right 0.15s infinite 0.075s;
+}
+.state-focusing #bunny-eyes {
+    transform: scaleY(0.7);
+}
+.state-focusing #prop-keyboard {
+    opacity: 1 !important;
+}
+
+/* State: Celebrate */
+.state-celebrate {
+    animation: bounce 0.5s infinite ease-in-out;
+}
+.state-celebrate #bunny-eyes {
+    transform: scaleY(0.3) scaleX(1.3);
+}
+
+/* State: Thinking */
+.state-thinking #bunny-body {
+    animation: pulse 1.5s infinite;
+}
+.state-thinking #bunny-eyes {
+    animation: look-around 2s infinite ease-in-out;
+}
+.state-thinking #prop-keyboard {
+    opacity: 0 !important;
 }
 
 
